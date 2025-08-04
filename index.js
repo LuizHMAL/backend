@@ -6,19 +6,15 @@ const PORT = 5000;
 
 app.use(express.json());
 
-const Drone = require('./models/drone_model.js');
+const { listarDrones } = require('./controller/drone_controller');
 
-const meuDrone = new Drone('Ali express', 100, 'São Paulo', "available", 10)
-
-meuDrone.toFly(5);
-
-meuDrone.toFly(15);
-
-console.log(meuDrone);
-
+// Rotas
 app.get('/', (req, res) => {
   res.send('API do Delivery Drone funcionando!');
 });
+
+app.get('/drones', listarDrones);
+
 
 app.listen(PORT, () => {
   console.log(`Servidor rodando em http://localhost:${PORT}`);
