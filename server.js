@@ -3,10 +3,9 @@ const cors = require('cors');
 
 const app = express();
 
-// CORS
 app.use(cors());
 
-// Middleware para tratar JSON com erro de sintaxe
+
 app.use(express.json());
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400 && 'body' in err) {
@@ -16,7 +15,7 @@ app.use((err, req, res, next) => {
   next();
 });
 
-// Rotas
+
 const deliveryRoutes = require('./routes/delivery_routes');
 const droneRoutes = require('./routes/drone_routes');
 const locationRoutes = require('./routes/location_routes');

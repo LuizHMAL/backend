@@ -51,10 +51,10 @@ class Delivery {
       this.droneId,
       this.originId,
       this.destinationId,
-      this.originLocationX,          // obrigatório!
-      this.originLocationY,          // obrigatório!
-      this.destinationCartesianX,    // obrigatório!
-      this.destinationCartesianY,    // obrigatório!
+      this.originLocationX,          
+      this.originLocationY,          
+      this.destinationCartesianX,    
+      this.destinationCartesianY,    
       this.distance,
       this.price,
       this.priority

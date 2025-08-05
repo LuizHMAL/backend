@@ -3,6 +3,6 @@ const router = express.Router();
 const { listarLocations, criarLocation} = require('../controller/location_controller');
 
 router.get('/', listarLocations);
-router.post('/', criarLocation); // Endpoint para criar nova location
+router.post('/', criarLocation);
 
 module.exports = router;

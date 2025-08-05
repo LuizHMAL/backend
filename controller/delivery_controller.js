@@ -6,6 +6,13 @@ const {
   calcularDistancia
 } = require('../connections/delivery_connection');
 
+const { 
+  calcularDistancia,
+  gerarObstaculo
+  } = require('../utils/calculos_delivery');
+
+
+
 const { atualizarDroneStatusEBateria, finalizarEntrega } = require('../connections/drone_connection');
 const Delivery = require('../model/delivery');
 
@@ -20,9 +27,9 @@ async function listarDeliveries(req, res) {
 }
 
 function simularEntrega(droneId, deliveryId, distancia) {
-  const duracaoMs = distancia; // 1 metro = 1 ms → 1 km = 1000 ms
+  const duracaoMs = distancia;
 
-  // Define como "onDelivery" no início
+
   atualizarDroneStatusEBateria(droneId, 'onDelivery');
 
   setTimeout(async () => {
@@ -75,7 +82,7 @@ async function createDelivery(req, res) {
 
     const novaEntrega = await insertDelivery(entrega);
 
-    // Inicia simulação da entrega real
+
     simularEntrega(droneId, novaEntrega.id, distance);
 
     return res.status(201).json(novaEntrega);

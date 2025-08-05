@@ -6,6 +6,6 @@ const {
 } = require('../controller/delivery_controller');
 
 router.get('/', listarDeliveries);
-router.post('/', createDelivery); // ✅ importante para Postman funcionar
+router.post('/', createDelivery); 
 
 module.exports = router;

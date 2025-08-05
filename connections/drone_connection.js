@@ -36,7 +36,7 @@ async function atualizarDroneStatusEBateria(droneId, novoStatus, distancia = 0) 
   `, [novoStatus, consumo, droneId]);
 }
 
-// Marca a entrega como finalizada
+
 async function finalizarEntrega(deliveryId) {
   await db.query(`
     UPDATE deliveries
