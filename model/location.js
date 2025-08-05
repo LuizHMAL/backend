@@ -1,25 +1,23 @@
-class Location{
-    constructor(
-        name,
-        latitude,
-        longitude,
-        obstacle_x,
-        obstacle_y) {
-        this.id = Math.floor(Math.random() * 100000); 
-        this.name = name;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.obstacle_x = obstacle_x;
-        this.obstacle_y = obstacle_y;
-    }
+class Location {
+  constructor(name, cartesian_x, cartesian_y) {
+    this.id = Math.floor(Math.random() * 100000);
+    this.name = name;
+    this.cartesian_x = cartesian_x;
+    this.cartesian_y = cartesian_y;
+  }
 
-    getCoordinates() {
-        return { latitude: this.latitude, longitude: this.longitude };
-    }
+  getCoordinates() {
+    return { x: this.cartesian_x, y: this.cartesian_y };
+  }
 
-    setCoordinates(latitude, longitude) {
-        this.latitude = latitude;
-        this.longitude = longitude;
-    }
+  setCoordinates(cartesian_x, cartesian_y) {
+    this.cartesian_x = cartesian_x;
+    this.cartesian_y = cartesian_y;
+  }
+
+  toDatabaseArray() {
+    return [this.name, this.cartesian_x, this.cartesian_y];
+  }
 }
-    module.exports = Location;
+
+module.exports = Location;

@@ -1,7 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const { listarDrones } = require('../controller/drone_controller');
+const { listarDrones, criarNovoDrone } = require('../controller/drone_controller');
 
 router.get('/', listarDrones);
+router.post('/', criarNovoDrone); // ✅ novo endpoint
 
 module.exports = router;

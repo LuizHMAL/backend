@@ -7,10 +7,8 @@ async function listarLocations(req, res) {
 
     const locations = rows.map(row => new Location(
       row.name,
-      row.latitude,
-      row.longitude,
-      row.obstacle_x,
-      row.obstacle_y
+      row.cartesian_x,
+      row.cartesian_y
     ));
 
     res.json(locations);
@@ -20,4 +18,21 @@ async function listarLocations(req, res) {
   }
 }
 
-module.exports = { listarLocations };
+async function criarLocation(req, res) {
+  const { name, cartesian_x, cartesian_y } = req.body;
+
+  if (!name || cartesian_x == null || cartesian_y == null) {
+    return res.status(400).json({ error: 'Campos obrigatórios faltando' });
+  }
+
+  try {
+    const novaLocation = new Location(name, cartesian_x, cartesian_y);
+    const resultado = await criarLocation(novaLocation);
+    res.status(201).json(resultado);
+  } catch (err) {
+    console.error('Erro ao criar location:', err);
+    res.status(500).json({ error: 'Erro ao criar location' });
+  }
+}
+
+module.exports = { listarLocations, criarLocation };

@@ -4,8 +4,16 @@ class Delivery {
     droneId, 
     originId, 
     destinationId, 
+
+    // novos campos adicionados
+    originLocationX,
+    originLocationY,
+    destinationCartesianX,
+    destinationCartesianY,
+
     distance = 0, 
     price = 0, 
+    priority = null,
     createdAt = new Date(), 
     finishedAt = null 
   }) {
@@ -13,8 +21,15 @@ class Delivery {
     this.droneId = droneId;
     this.originId = originId;
     this.destinationId = destinationId;
+
+    this.originLocationX = originLocationX;
+    this.originLocationY = originLocationY;
+    this.destinationCartesianX = destinationCartesianX;
+    this.destinationCartesianY = destinationCartesianY;
+
     this.distance = distance;
     this.price = price;
+    this.priority = priority;
     this.createdAt = createdAt;
     this.finishedAt = finishedAt;
   }
@@ -29,6 +44,21 @@ class Delivery {
 
   updatePrice(price) {
     this.price = price;
+  }
+
+  toDatabaseArray() {
+    return [
+      this.droneId,
+      this.originId,
+      this.destinationId,
+      this.originLocationX,          // obrigatório!
+      this.originLocationY,          // obrigatório!
+      this.destinationCartesianX,    // obrigatório!
+      this.destinationCartesianY,    // obrigatório!
+      this.distance,
+      this.price,
+      this.priority
+    ];
   }
 }
 

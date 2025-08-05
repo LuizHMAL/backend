@@ -1,42 +1,47 @@
-    class Drone{ 
-        constructor(
-            model,
-            battery,
-            location,
-            status,
-            capacity,
-            distance) {
-            this.model = model;
-            this.battery = battery;
-            this.location = location;
-            this.status = status;
-            this.capacity = capacity;
-            this.distance = distance;
-        }
-       canCarry(weight) { 
-           return weight <= this.capacity;
-       }        
-       isAvailable() {
-           return this.status === 'available';
-       }
-       isCharging() {
-           return this.status === 'charging';
-       }
-       startCharging() {
-           if (this.isAvailable() && this.battery < 20) {
-               this.status = 'charging';
-               console.log(`Drone ${this.model} is now charging.`);
-           } else {
-               console.log(`Drone ${this.model} cannot start charging while ${this.status}.`);
-           }
-       }
-       startDelivery() {
-           if (this.isAvailable()) {
-               this.status = 'delivering';
-               console.log(`Drone ${this.model} has started the delivery.`);
-           } else {
-               console.log(`Drone ${this.model} is not available for delivery.`);
-           }
-       }
-    }
-    module.exports = Drone;
+class Drone {
+  constructor({
+    id = null,
+    model,
+    battery = 100,
+    status = 'available',
+    capacity,
+    distance,
+    priority = null,
+    location_x = 0,
+    location_y = 0
+  }) {
+    this.id = id;
+    this.model = model;
+    this.battery = battery;
+    this.status = status;
+    this.capacity = capacity;
+    this.distance = distance;
+    this.priority = priority;
+    this.location_x = location_x;
+    this.location_y = location_y;
+  }
+
+  updateLocation(x, y) {
+    this.location_x = x;
+    this.location_y = y;
+  }
+
+  updateStatus(newStatus) {
+    this.status = newStatus;
+  }
+
+  toDatabaseArray() {
+    return [
+      this.model,
+      this.battery,
+      this.status,
+      this.capacity,
+      this.location_x,
+      this.location_y,
+      this.distance,
+      this.priority
+    ];
+  }
+}
+
+module.exports = Drone;
