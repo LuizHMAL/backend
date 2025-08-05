@@ -1,6 +1,5 @@
 class Location {
   constructor(name, cartesian_x, cartesian_y) {
-    this.id = Math.floor(Math.random() * 100000);
     this.name = name;
     this.cartesian_x = cartesian_x;
     this.cartesian_y = cartesian_y;

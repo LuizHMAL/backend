@@ -1,4 +1,4 @@
-const { buscarTodasLocations } = require('../connections/location_connection');
+const { buscarTodasLocations, criarLocation: criarLocationDB } = require('../connections/location_connection');
 const Location = require('../model/location');
 
 async function listarLocations(req, res) {
@@ -19,6 +19,7 @@ async function listarLocations(req, res) {
 }
 
 async function criarLocation(req, res) {
+  console.log('Requisição recebida para criar location:', req.body);
   const { name, cartesian_x, cartesian_y } = req.body;
 
   if (!name || cartesian_x == null || cartesian_y == null) {
@@ -27,7 +28,7 @@ async function criarLocation(req, res) {
 
   try {
     const novaLocation = new Location(name, cartesian_x, cartesian_y);
-    const resultado = await criarLocation(novaLocation);
+    const resultado = await criarLocationDB(novaLocation);
     res.status(201).json(resultado);
   } catch (err) {
     console.error('Erro ao criar location:', err);
