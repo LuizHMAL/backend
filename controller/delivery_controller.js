@@ -17,8 +17,7 @@ const {
 
 const Delivery = require('../model/delivery');
 
-
-const VELOCIDADE_SIMULACAO = 3000; 
+const VELOCIDADE_SIMULACAO = 3000; // 3 segundos por km
 
 async function listarDeliveries(req, res) {
   try {
@@ -51,10 +50,17 @@ function simularEntrega(droneId, deliveryId, distancia) {
 }
 
 async function createDelivery(req, res) {
-  const { droneId, destinationId, price, priority = 'normal' } = req.body;
+  const {
+    droneId,
+    destinationId,
+    price,
+    priority = 'normal',
+    weight
+  } = req.body;
+
+  const pesoEntrega = (weight === undefined || weight === null) ? 0 : weight;
 
   try {
-
     const statusAtual = await buscarStatusDrone(droneId);
     if (statusAtual !== 'available') {
       return res.status(400).json({ error: 'Drone está ocupado com outra entrega' });
@@ -71,18 +77,44 @@ async function createDelivery(req, res) {
       drone_y,
       dest_x,
       dest_y,
-      drone_distance: autonomiaDrone
+      drone_distance: autonomiaDrone,
+      drone_capacity: capacidadeDrone
     } = data;
+
+    if (weight > capacidadeDrone) {
+      return res.status(400).json({
+        error: `Peso da entrega (${weight}) excede a capacidade do drone (${capacidadeDrone})`
+      });
+    }
 
     const obstaculo = gerarObstaculo(drone_x, drone_y, dest_x, dest_y);
     let distance = calcularDistancia(drone_x, drone_y, dest_x, dest_y, obstaculo);
-    distance = distance * 2; 
+    distance = distance * 2;
 
     if (distance > autonomiaDrone) {
       return res.status(400).json({
         error: `Distância total (${distance}) excede a autonomia do drone (${autonomiaDrone})`
       });
     }
+
+    // Validação e ajuste da prioridade
+    const prioridadesValidas = ['normal', 'urgente', 'critica'];
+    const priorityValida = prioridadesValidas.includes(priority) ? priority : 'normal';
+
+    // Cálculo automático do preço (ignora valor enviado)
+    const PRECO_BASE_POR_KM = 5;
+    const PRECO_POR_KG = 2;
+    const MULTIPLICADOR_PRIORIDADE = {
+      normal: 1,
+      urgente: 1.5,
+      critica: 2
+    };
+
+    const precoBase = distance * PRECO_BASE_POR_KM;
+    const precoPeso = weight * PRECO_POR_KG;
+    const multiplicador = MULTIPLICADOR_PRIORIDADE[priorityValida];
+
+    const precoFinal = (precoBase + precoPeso) * multiplicador;
 
     const entrega = new Delivery({
       droneId,
@@ -92,9 +124,16 @@ async function createDelivery(req, res) {
       destinationCartesianX: dest_x,
       destinationCartesianY: dest_y,
       distance,
-      price,
-      priority
+      price: precoFinal,
+      priority: priorityValida,
+      weight: pesoEntrega,
+      drone_capacity: capacidadeDrone
     });
+
+
+    // Log dos valores enviados para o DB
+    const dbArray = entrega.toDatabaseArray();
+    console.log("Valores enviados no INSERT:", dbArray);
 
     const novaEntrega = await insertDelivery(entrega);
 
