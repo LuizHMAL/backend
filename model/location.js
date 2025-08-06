@@ -1,5 +1,6 @@
 class Location {
-  constructor(name, cartesian_x, cartesian_y) {
+  constructor(id, name, cartesian_x, cartesian_y) {
+    this.id = id;
     this.name = name;
     this.cartesian_x = cartesian_x;
     this.cartesian_y = cartesian_y;

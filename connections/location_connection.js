@@ -1,7 +1,7 @@
 const db = require('./postgres');
 
 async function buscarTodasLocations() {
-  const result = await db.query('SELECT * FROM locations');
+  const result = await db.query('SELECT * FROM locations WHERE deleted_at IS NULL');
   return result.rows;
 }
 
@@ -32,8 +32,15 @@ async function atualizarLocation(id, location) {
 }
 
 async function deletarLocation(id) {
-  await db.query('DELETE FROM locations WHERE id = $1', [id]);
+  const result = await db.query(
+    `UPDATE locations
+     SET deleted_at = NOW()
+     WHERE id = $1`,
+    [id]
+  );
+  return result.rowCount; 
 }
 
 
-module.exports = { buscarTodasLocations, criarLocation, buscarLocationPorId, atualizarLocation };
+
+module.exports = { deletarLocation,buscarTodasLocations, criarLocation, buscarLocationPorId, atualizarLocation };

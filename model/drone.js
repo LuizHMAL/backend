@@ -2,21 +2,17 @@ class Drone {
   constructor({
     id = null,
     model,
-    battery = 100,
-    status = 'available',
     capacity,
     distance,
-    priority = null,
     location_x = 0,
     location_y = 0
   }) {
     this.id = id;
     this.model = model;
-    this.battery = battery;
-    this.status = status;
+    this.battery = 100;          
+    this.status = 'available';    
     this.capacity = capacity;
     this.distance = distance;
-    this.priority = priority;
     this.location_x = location_x;
     this.location_y = location_y;
   }
@@ -38,8 +34,7 @@ class Drone {
       this.capacity,
       this.location_x,
       this.location_y,
-      this.distance,
-      this.priority
+      this.distance
     ];
   }
 }
