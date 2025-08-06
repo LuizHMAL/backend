@@ -10,11 +10,11 @@ async function buscarTodasDeliveries() {
 async function insertDelivery(delivery) {
   const result = await db.query(
     `INSERT INTO deliveries (
-      drone_id, origin_id, destination_id,
+      drone_id, destination_id,
       origin_location_x, origin_location_y,
       destination_cartesian_x, destination_cartesian_y,
       distance, price, priority
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     RETURNING *`,
     delivery.toDatabaseArray()
   );

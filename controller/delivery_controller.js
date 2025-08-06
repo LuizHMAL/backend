@@ -2,19 +2,23 @@ const {
   insertDelivery,
   buscarInfoDroneELocation,
   buscarTodasDeliveries,
-  gerarObstaculo,
-  calcularDistancia
 } = require('../connections/delivery_connection');
 
 const { 
   calcularDistancia,
   gerarObstaculo
-  } = require('../utils/calculos_delivery');
+} = require('../utils/calculos_delivery');
 
+const { 
+  atualizarDroneStatusEBateria, 
+  finalizarEntrega,
+  buscarStatusDrone
+} = require('../connections/drone_connection');
 
-
-const { atualizarDroneStatusEBateria, finalizarEntrega } = require('../connections/drone_connection');
 const Delivery = require('../model/delivery');
+
+
+const VELOCIDADE_SIMULACAO = 3000; 
 
 async function listarDeliveries(req, res) {
   try {
@@ -27,22 +31,35 @@ async function listarDeliveries(req, res) {
 }
 
 function simularEntrega(droneId, deliveryId, distancia) {
-  const duracaoMs = distancia;
+  const duracaoMs = distancia * VELOCIDADE_SIMULACAO;
 
-
-  atualizarDroneStatusEBateria(droneId, 'onDelivery');
-
-  setTimeout(async () => {
-    await atualizarDroneStatusEBateria(droneId, 'available', distancia);
-    await finalizarEntrega(deliveryId);
-    console.log(`Entrega ${deliveryId} finalizada após ${duracaoMs}ms`);
-  }, duracaoMs);
+  atualizarDroneStatusEBateria(droneId, 'onDelivery')
+    .then(() => {
+      setTimeout(async () => {
+        try {
+          await atualizarDroneStatusEBateria(droneId, 'available', distancia);
+          await finalizarEntrega(deliveryId);
+          console.log(`Entrega ${deliveryId} finalizada após ${duracaoMs}ms`);
+        } catch (err) {
+          console.error("Erro durante finalização da entrega:", err);
+        }
+      }, duracaoMs);
+    })
+    .catch((err) => {
+      console.error("Erro ao atualizar status para onDelivery:", err);
+    });
 }
 
 async function createDelivery(req, res) {
-  const { droneId, originId, destinationId, price, priority = 'normal' } = req.body;
+  const { droneId, destinationId, price, priority = 'normal' } = req.body;
 
   try {
+
+    const statusAtual = await buscarStatusDrone(droneId);
+    if (statusAtual !== 'available') {
+      return res.status(400).json({ error: 'Drone está ocupado com outra entrega' });
+    }
+
     const data = await buscarInfoDroneELocation(droneId, destinationId);
 
     if (!data) {
@@ -59,7 +76,7 @@ async function createDelivery(req, res) {
 
     const obstaculo = gerarObstaculo(drone_x, drone_y, dest_x, dest_y);
     let distance = calcularDistancia(drone_x, drone_y, dest_x, dest_y, obstaculo);
-    distance = distance * 2; // ida + volta
+    distance = distance * 2; 
 
     if (distance > autonomiaDrone) {
       return res.status(400).json({
@@ -69,7 +86,6 @@ async function createDelivery(req, res) {
 
     const entrega = new Delivery({
       droneId,
-      originId,
       destinationId,
       originLocationX: drone_x,
       originLocationY: drone_y,
@@ -81,7 +97,6 @@ async function createDelivery(req, res) {
     });
 
     const novaEntrega = await insertDelivery(entrega);
-
 
     simularEntrega(droneId, novaEntrega.id, distance);
 

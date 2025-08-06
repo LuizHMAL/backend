@@ -34,7 +34,7 @@ async function criarNovoDrone(req, res) {
       battery,
       status,
       capacity,
-      location_x: 0, // posição inicial
+      location_x: 0, 
       location_y: 0,
       distance,
       priority

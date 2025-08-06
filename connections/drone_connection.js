@@ -24,7 +24,6 @@ async function criarDrone(drone) {
   return result.rows[0];
 }
 
-
 async function atualizarDroneStatusEBateria(droneId, novoStatus, distancia = 0) {
   const consumo = Math.ceil(distancia / 1); // 1% por km
 
@@ -36,7 +35,6 @@ async function atualizarDroneStatusEBateria(droneId, novoStatus, distancia = 0) 
   `, [novoStatus, consumo, droneId]);
 }
 
-
 async function finalizarEntrega(deliveryId) {
   await db.query(`
     UPDATE deliveries
@@ -45,4 +43,22 @@ async function finalizarEntrega(deliveryId) {
   `, [deliveryId]);
 }
 
-module.exports = { criarDrone,buscarTodosDrones, atualizarDroneStatusEBateria, finalizarEntrega };
+
+async function buscarStatusDrone(droneId) {
+  const result = await db.query(
+    `SELECT status FROM drones WHERE id = $1`,
+    [droneId]
+  );
+  if (result.rows.length === 0) {
+    return null; 
+  }
+  return result.rows[0].status;
+}
+
+module.exports = {
+  criarDrone,
+  buscarTodosDrones,
+  atualizarDroneStatusEBateria,
+  finalizarEntrega,
+  buscarStatusDrone, 
+};
