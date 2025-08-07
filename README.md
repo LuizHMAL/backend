@@ -75,3 +75,8 @@ CREATE TABLE deliveries (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   finished_at TIMESTAMP DEFAULT NULL
 );
+# Para a execução do arquivo, é necessário utilizar o comando:
+```
+node server.js 
+```
+No terminal
