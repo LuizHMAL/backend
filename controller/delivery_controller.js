@@ -81,15 +81,15 @@ async function createDelivery(req, res) {
       drone_capacity: capacidadeDrone
     } = data;
 
-    if (weight > capacidadeDrone) {
+    if (pesoEntrega > capacidadeDrone) {
       return res.status(400).json({
-        error: `Peso da entrega (${weight}) excede a capacidade do drone (${capacidadeDrone})`
+        error: `Peso da entrega (${pesoEntrega}) excede a capacidade do drone (${capacidadeDrone})`
       });
     }
 
     const obstaculo = gerarObstaculo(drone_x, drone_y, dest_x, dest_y);
     let distance = calcularDistancia(drone_x, drone_y, dest_x, dest_y, obstaculo);
-    distance = distance * 2;
+    distance = distance * 2; // ida e volta
 
     if (distance > autonomiaDrone) {
       return res.status(400).json({
@@ -101,7 +101,7 @@ async function createDelivery(req, res) {
     const prioridadesValidas = ['normal', 'urgente', 'critica'];
     const priorityValida = prioridadesValidas.includes(priority) ? priority : 'normal';
 
-    // Cálculo automático do preço (ignora valor enviado)
+    // Cálculo automático do preço
     const PRECO_BASE_POR_KM = 5;
     const PRECO_POR_KG = 2;
     const MULTIPLICADOR_PRIORIDADE = {
@@ -110,11 +110,10 @@ async function createDelivery(req, res) {
       critica: 2
     };
 
-    const precoBase = distance * PRECO_BASE_POR_KM;
-    const precoPeso = weight * PRECO_POR_KG;
     const multiplicador = MULTIPLICADOR_PRIORIDADE[priorityValida];
-
-    const precoFinal = (precoBase + precoPeso) * multiplicador;
+    const precoBase = distance * PRECO_BASE_POR_KM * multiplicador;
+    const precoPeso = pesoEntrega * PRECO_POR_KG;
+    const precoFinal = precoBase + precoPeso;
 
     const entrega = new Delivery({
       droneId,
@@ -129,7 +128,6 @@ async function createDelivery(req, res) {
       weight: pesoEntrega,
       drone_capacity: capacidadeDrone
     });
-
 
     // Log dos valores enviados para o DB
     const dbArray = entrega.toDatabaseArray();

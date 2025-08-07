@@ -1,4 +1,4 @@
-const {deletarLocation, buscarLocationPorId,buscarTodasLocations, criarLocation: criarLocationDB } = require('../connections/location_connection');
+const { deletarLocation, buscarLocationPorId, buscarTodasLocations, criarLocation: criarLocationDB } = require('../connections/location_connection');
 const Location = require('../model/location');
 
 async function listarLocations(req, res) {
@@ -28,7 +28,12 @@ async function criarLocation(req, res) {
   }
 
   try {
-    const novaLocation = new Location(name, cartesian_x, cartesian_y);
+    const novaLocation = {
+      name,
+      cartesian_x,
+      cartesian_y
+    };
+
     const resultado = await criarLocationDB(novaLocation);
     res.status(201).json(resultado);
   } catch (err) {
@@ -36,8 +41,6 @@ async function criarLocation(req, res) {
     res.status(500).json({ error: 'Erro ao criar location' });
   }
 }
-
-
 
 async function buscarLocationById(req, res) {
   const { id } = req.params;
@@ -53,16 +56,21 @@ async function buscarLocationById(req, res) {
     res.status(500).json({ error: 'Erro ao buscar location' });
   }
 }
+
 async function deleteLocation(req, res) {
-  const { id } = req.params;  
+  const { id } = req.params;
   try {
     await deletarLocation(id);
     res.status(200).json({ message: 'Location deletada com sucesso!' });
-
   } catch (err) {
     console.error('Erro ao deletar location:', err);
     res.status(500).json({ error: 'Erro ao deletar location' });
   }
 }
 
-module.exports = { listarLocations, criarLocation, buscarLocationById, deleteLocation };
+module.exports = {
+  listarLocations,
+  criarLocation,
+  buscarLocationById,
+  deleteLocation
+};
